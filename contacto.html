@@ -7,6 +7,112 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <div class="menu">
+        <div class="marca">
+            <a href="index.html"><img src="img/logos/logo-saludvida-header.png" alt="SaludVida Hospital"></a>
+        </div>
+        <ul>
+            <li><a href="index.html#inicio">Inicio</a></li>
+            <li><a href="index.html#noticias">Noticias</a></li>
+            <li><a href="index.html#servicios">Servicios</a></li>
+            <li><a href="index.html#nosotros">Nosotros</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
 
+        </ul>
+    </div>
+
+    <div class="portada contacto-portada">
+        <div class="texto-portada">
+            <h1>Contáctanos</h1>
+            <p>Estamos aquí para ayudarte. Completa el formulario y nos pondremos en contacto contigo.</p>
+        </div>
+        <img src="imagenes/img4.jpg" alt="Profesional de salud en una consulta">
+    </div>
+
+    <div class="contenido contacto-contenido">
+        <div class="formulario">
+            <h2>Formulario de contacto</h2>
+            <p>Diligencia tus datos y cuentanos cómo podemos ayudarte.</p>
+            <form action="#" method="get">
+                <p><label for="nombre">Nombre completo *</label><br>
+                <input type="text" id="nombre" name="nombre" required></p>
+
+                <p><label for="documento">Tipo de documento *</label><br>
+                <select id="documento" name="documento" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="cedula">Cédula de ciudadanía</option>
+                    <option value="tarjeta">Tarjeta de identidad</option>
+                    <option value="pasaporte">Pasaporte</option>
+                </select></p>
+
+                <p><label for="numero">Número de documento *</label><br>
+                <input type="text" id="numero" name="numero" required></p>
+
+                <p><label for="fecha">Fecha de nacimiento</label><br>
+                <input type="date" id="fecha" name="fecha"></p>
+
+                <p><label for="correo">Correo electrónico *</label><br>
+                <input type="email" id="correo" name="correo" required></p>
+
+                <p><label for="telefono">Teléfono *</label><br>
+                <input type="tel" id="telefono" name="telefono" required></p>
+
+                <p><label for="ciudad">Ciudad *</label><br>
+                <input type="text" id="ciudad" name="ciudad" required></p>
+
+                <p><label for="servicio">Servicio de interés *</label><br>
+                <select id="servicio" name="servicio" required>
+                    <option value="">Selecciona un servicio</option>
+                    <option value="consulta">Consulta externa</option>
+                    <option value="urgencias">Urgencias</option>
+                    <option value="hospitalizacion">Hospitalización</option>
+                    <option value="programas">Programas de salud</option>
+                </select></p>
+
+                <p>Motivo del contacto *</p>
+                <p><input type="radio" id="informacion" name="motivo" value="informacion" required>
+                <label for="informacion">Solicitar información</label></p>
+                <p><input type="radio" id="cita" name="motivo" value="cita">
+                <label for="cita">Agendar una cita</label></p>
+                <p><input type="radio" id="sugerencia" name="motivo" value="sugerencia">
+                <label for="sugerencia">Comentario o sugerencia</label></p>
+<p><input type="radio" id="otro" name="motivo" value="otro">
+                <label for="otro">Otro</label></p>
+
+                <p><label for="mensaje">Mensaje *</label><br>
+                <textarea id="mensaje" name="mensaje" rows="5" required></textarea></p>
+
+                <p><input type="checkbox" id="datos" name="datos" required>
+                <label for="datos">Acepto el tratamiento de mis datos personales *</label></p>
+
+                <p><input class="enviar" type="submit" value="Enviar mensaje"></p>
+            </form>
+</div>
+
+        <div class="datos-contacto">
+            <h2>Información de contacto</h2>
+            <h3>Dirección</h3>
+            <p>Calle 123 #45-67<br>Bogotá, Colombia</p>
+            <h3>Teléfono</h3>
+            <p>+57 601 123 4567</p>
+            <h3>Correo electrónico</h3>
+            <p>info@saludvida.com</p>
+            <h3>Horario de atención</h3>
+            <p>Lunes a viernes: 7:00 a. m. a 6:00 p. m.<br>Sábados: 7:00 a. m. a 12:00 p. m.</p>
+            <h2>Ubicación</h2>
+            <p>Calle 123 #45-67, Bogotá, Colombia.</p>
+        </div>
+    </div>
+
+    <div class="pie">
+        <div class="pie-identidad">
+            <img src="img/logos/logo-saludvida-footer.png" alt="SaludVida Hospital">
+        </div>
+        <div class="pie-contacto">
+            <p>Calle 123 #45-67, Bogotá</p>
+            <p>Teléfono: +57 601 123 4567</p>
+            <p><a href="index.html">Volver al inicio</a></p>
+        </div>
+    </div>
 </body>
 </html>
