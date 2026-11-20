@@ -1,0 +1,224 @@
+<div style="background: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+  
+  <!-- Cabecera de la tarjeta con botón Nuevo y Buscador -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+    <div>
+      <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a;">Directorio de Estudiantes</h3>
+      <span style="font-size: 0.85rem; color: #64748b;">Administra los registros académicos vinculados a la base de datos</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+      <p-iconfield iconPosition="left">
+        <p-inputicon styleClass="pi pi-search" />
+        <input 
+          pInputText 
+          type="text" 
+          (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+          placeholder="Buscar estudiante..." 
+        />
+      </p-iconfield>
+
+      <p-button 
+        label="Nuevo Estudiante" 
+        icon="pi pi-plus" 
+        severity="primary" 
+        (onClick)="abrirNuevoEstudiante()" 
+      />
+    </div>
+  </div>
+
+  <!-- Tabla de datos PrimeNG -->
+  <p-table 
+    #dt
+    [value]="estudiantes" 
+    [paginator]="true" 
+    [rows]="5" 
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [loading]="cargando"
+    [globalFilterFields]="['codigo_estudiante', 'nombres', 'apellidos', 'programa.nombre_programa', 'telefono']"
+    styleClass="p-datatable-sm p-datatable-striped"
+    [tableStyle]="{ 'min-width': '55rem' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="codigo_estudiante">Código <p-sorticon field="codigo_estudiante" /></th>
+        <th pSortableColumn="nombres">Estudiante <p-sorticon field="nombres" /></th>
+        <th pSortableColumn="programa.nombre_programa">Programa Académico <p-sorticon field="programa.nombre_programa" /></th>
+        <th>Fecha Nac.</th>
+        <th>Teléfono</th>
+        <th style="width: 8rem; text-align: center;">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-est>
+      <tr>
+        <td><strong>{{ est.codigo_estudiante }}</strong></td>
+        <td>
+          <div style="font-weight: 600; color: #1e293b;">{{ est.nombres }} {{ est.apellidos }}</div>
+          <small style="color: #64748b;">{{ est.genero }} • {{ est.direccion }}</small>
+        </td>
+        <td>
+          <p-tag [value]="est.programa?.nombre_programa || 'Sin programa'" severity="info" />
+        </td>
+       <td>{{ formatearFechaVisual(est.fecha_nacimiento) }}</td>
+        <td>{{ est.telefono }}</td>
+        <td style="text-align: center;">
+          <div style="display: flex; justify-content: center; gap: 0.4rem;">
+            <p-button 
+              icon="pi pi-pencil" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="warn" 
+              pTooltip="Editar registro" 
+              tooltipPosition="top"
+              (onClick)="editarEstudiante(est)" 
+            />
+            <p-button 
+              icon="pi pi-trash" 
+              [rounded]="true" 
+              [text]="true" 
+              severity="danger" 
+              pTooltip="Eliminar registro" 
+              tooltipPosition="top"
+              (onClick)="eliminarEstudiante(est)" 
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">
+          <i class="pi pi-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+          No se encontraron estudiantes registrados.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Modal con Formulario Reactivo -->
+<p-dialog 
+  [(visible)]="mostrarModal" 
+  [header]="esEdicion ? 'Editar Estudiante' : 'Registrar Nuevo Estudiante'" 
+  [modal]="true" 
+  [style]="{ width: '36rem', maxWidth: '95vw' }"
+  [draggable]="false"
+>
+  <form [formGroup]="estudianteForm" (ngSubmit)="guardarEstudiante()" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+    
+    @if (errorServidor) {
+  <p-message severity="error">{{ errorServidor }}</p-message>
+}
+
+    <!-- Fila 1: Código y Programa Académico -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="codigo" style="font-weight: 600; font-size: 0.875rem;">Código Estudiantil *</label>
+        <input id="codigo" pInputText formControlName="codigo_estudiante" placeholder="Ej: 224034069" />
+        @if (campoInvalido('codigo_estudiante')) {
+          <small style="color: #ef4444;">Solo dígitos numéricos (mín. 5 cifras).</small>
+        }
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="programa" style="font-weight: 600; font-size: 0.875rem;">Programa Académico *</label>
+        <p-select 
+          inputId="programa"
+          formControlName="id_programa" 
+          [options]="programas" 
+          optionLabel="nombre_programa" 
+          optionValue="id" 
+          placeholder="Seleccione programa"
+          appendTo="body"
+          [style]="{ width: '100%' }"
+        />
+        @if (campoInvalido('id_programa')) {
+          <small style="color: #ef4444;">Seleccione un programa válido.</small>
+        }
+      </div>
+    </div>
+
+    <!-- Fila 2: Nombres y Apellidos -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="nombres" style="font-weight: 600; font-size: 0.875rem;">Nombres *</label>
+        <input id="nombres" pInputText formControlName="nombres" placeholder="Ej: Jimmy Leonel" />
+        @if (campoInvalido('nombres')) {
+          <small style="color: #ef4444;">Ingrese los nombres (mín. 2 letras).</small>
+        }
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="apellidos" style="font-weight: 600; font-size: 0.875rem;">Apellidos *</label>
+        <input id="apellidos" pInputText formControlName="apellidos" placeholder="Ej: Alpala Chalparizán" />
+        @if (campoInvalido('apellidos')) {
+          <small style="color: #ef4444;">Ingrese los apellidos (mín. 2 letras).</small>
+        }
+      </div>
+    </div>
+
+    <!-- Fila 3: Fecha de Nacimiento y Género -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="fecha" style="font-weight: 600; font-size: 0.875rem;">Fecha de Nacimiento *</label>
+        <p-datepicker 
+  inputId="fecha"
+  formControlName="fecha_nacimiento" 
+  dateFormat="dd/mm/yy" 
+  [maxDate]="fechaMaxima"
+  [showIcon]="true" 
+  placeholder="DD/MM/AAAA"
+  appendTo="body"
+  [style]="{ width: '100%' }"
+/>
+        @if (campoInvalido('fecha_nacimiento')) {
+          <small style="color: #ef4444;">Seleccione la fecha de nacimiento.</small>
+        }
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="genero" style="font-weight: 600; font-size: 0.875rem;">Género *</label>
+        <p-select 
+          inputId="genero"
+          formControlName="genero" 
+          [options]="generos" 
+          optionLabel="label" 
+          optionValue="value" 
+          placeholder="Seleccione género"
+          appendTo="body"
+          [style]="{ width: '100%' }"
+        />
+        @if (campoInvalido('genero')) {
+          <small style="color: #ef4444;">Seleccione una opción.</small>
+        }
+      </div>
+    </div>
+
+    <!-- Fila 4: Dirección y Teléfono -->
+    <div style="display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 1rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="direccion" style="font-weight: 600; font-size: 0.875rem;">Dirección de Residencia *</label>
+        <input id="direccion" pInputText formControlName="direccion" placeholder="Ej: Calle 18 # 25-40" />
+        @if (campoInvalido('direccion')) {
+          <small style="color: #ef4444;">Ingrese una dirección válida.</small>
+        }
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <label for="telefono" style="font-weight: 600; font-size: 0.875rem;">Teléfono *</label>
+        <input id="telefono" pInputText formControlName="telefono" placeholder="Ej: 0327221100" />
+        @if (campoInvalido('telefono')) {
+          <small style="color: #ef4444;">7 a 15 dígitos (permite 0 inicial).</small>
+        }
+      </div>
+    </div>
+
+    <!-- Botones del pie del modal -->
+    <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [text]="true" type="button" (onClick)="mostrarModal = false" />
+      <p-button [label]="esEdicion ? 'Actualizar' : 'Guardar Registro'" icon="pi pi-check" severity="primary" type="submit" />
+    </div>
+  </form>
+</p-dialog>
