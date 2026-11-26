@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv*/
+venv/
+.env
+.env.*
+!.env.example
+
+# Node and Angular
+node_modules/
+dist/
+.angular/
+coverage/
+npm-debug.log*
+
+# Local license key; never commit personal license data
+Frontend/public/primeui-license.js
+frontend/public/primeui-license.js
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+Thumbs.db
+.DS_Store
+
+# Preserved metadata from the previous standalone Frontend Git repository
+/.git-frontend-backup/

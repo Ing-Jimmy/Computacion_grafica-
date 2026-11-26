@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+.auth-page {
+  display: grid;
+  min-height: 100vh;
+  padding: 24px;
+  place-items: center;
+}
+
+.auth-card {
+  width: min(100%, 680px);
+  padding: 36px;
+  border: 1px solid #e0e8ed;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 16px 44px rgb(23 43 58 / 8%);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #167c80;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  margin: 10px 0 24px;
+  color: #61727e;
+}
+
+form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+small {
+  color: #b42318;
+  font-size: 0.8rem;
+}
+
+label {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+p-password {
+  width: 100%;
+}
+
+.field p-select {
+  width: 100%;
+}
+
+:host ::ng-deep p-button {
+  grid-column: 1 / -1;
+}
+
+.error {
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff0ef;
+  color: #b42318;
+}
+
+.footnote {
+  margin: 24px 0 0;
+  color: #61727e;
+  text-align: center;
+}
+
+a {
+  color: #126d70;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .auth-card {
+    padding: 24px;
+  }
+
+  form {
+    grid-template-columns: 1fr;
+  }
+}
