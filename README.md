@@ -4,7 +4,7 @@ Aplicación de examen con Angular, FastAPI y MySQL/MariaDB.
 
 ## Estructura
 
-- `Frontend/`: aplicación Angular y componentes PrimeNG.
+- `Frontend/`: aplicación Angular con controles HTML/CSS nativos.
 - `backend/`: API FastAPI, modelos SQLAlchemy y servicios.
 - `DB/hospital_usuarios.sql`: creación no destructiva de la base, tabla y datos
   sintéticos de demostración.
@@ -20,6 +20,7 @@ Aplicación de examen con Angular, FastAPI y MySQL/MariaDB.
 
    El script usa `CREATE ... IF NOT EXISTS` e `INSERT IGNORE`; no borra tablas
    ni elimina datos existentes.
+
 3. En una terminal, configura e inicia FastAPI:
 
    ```powershell
@@ -48,12 +49,9 @@ Aplicación de examen con Angular, FastAPI y MySQL/MariaDB.
    ```powershell
    cd .\Frontend
    npm install
-   Copy-Item public\primeui-license.example.js public\primeui-license.js
    ```
 
-   Solicita una clave PrimeUI Community si eres elegible y colócala localmente
-   en `public\primeui-license.js`. Ese archivo está excluido de Git. Luego inicia
-   Angular:
+   Luego inicia Angular:
 
    ```powershell
    npm start
@@ -69,20 +67,18 @@ documentación en `http://127.0.0.1:8000/docs`.
 - [ ] `GET /api/usuarios/` responde `200` y lista datos desde `usuarios`.
 - [ ] Registro válido crea una cuenta con estado `Activado`; verificarla en MySQL.
 - [ ] Registro con identificación, email o nombre de usuario duplicado devuelve
-  `409`.
+      `409`.
 - [ ] Login válido permite acceder a `/usuarios`; credenciales incorrectas se
-  rechazan.
+      rechazan.
 - [ ] Usuario desactivado no puede iniciar sesión; el API responde `403`.
 - [ ] En la tabla, editar actualiza campos, cambiar estado persiste el nuevo
-  valor y eliminar devuelve `204`; confirmar cada cambio en MySQL.
+      valor y eliminar devuelve `204`; confirmar cada cambio en MySQL.
 - [ ] Angular puede llamar al API desde `http://localhost:4200` sin errores CORS.
 - [ ] Ejecutar `npm run build` desde `Frontend/`.
 
-En la última verificación, el build de Angular pasó. La prueba real de las
-operaciones HTTP requiere que `GET /api/usuarios/` responda `200`; anteriormente
-el servidor local respondió `500`, así que revisa el traceback de FastAPI y la
-configuración de conexión en `backend/.env` antes de marcar las pruebas como
-completadas.
+La interfaz usa controles HTML nativos y ya no requiere PrimeUI. Esta lista
+sirve para validar el flujo en cada instalación; marca los pasos solo después
+de comprobarlos en tu entorno local.
 
 ## Publicación
 
@@ -90,4 +86,4 @@ Rama de examen: `Examen-2-JimmyAlpala-Dolmer-Solarte`. Se usa guion porque Git
 no admite espacios en los nombres de ramas.
 
 El proyecto no debe incluir entornos virtuales, `node_modules`, compilados,
-archivos `.env` ni claves locales de licencia.
+ni archivos `.env`.

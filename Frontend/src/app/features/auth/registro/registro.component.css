@@ -59,22 +59,76 @@ label {
   font-weight: 600;
 }
 
-p-password {
+.control {
   width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #172b3a;
 }
 
-.field p-select {
-  width: 100%;
+.control:focus-visible {
+  border-color: #167c80;
+  outline: 3px solid rgb(22 124 128 / 18%);
 }
 
-:host ::ng-deep p-button {
+.password-control {
+  position: relative;
+}
+
+.password-control .control {
+  padding-right: 68px;
+}
+
+.visibility-button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  padding: 4px;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #126d70;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.primary-button {
   grid-column: 1 / -1;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #0eab75;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #0a9465;
+}
+
+.primary-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.feedback {
+  margin: 0 0 16px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.feedback-error {
+  background: #fff0ef;
+  color: #b42318;
 }
 
 .error {
-  padding: 12px;
-  border-radius: 8px;
-  background: #fff0ef;
   color: #b42318;
 }
 

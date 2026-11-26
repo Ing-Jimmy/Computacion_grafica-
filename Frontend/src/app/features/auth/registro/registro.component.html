@@ -4,35 +4,60 @@
     <h1 id="registro-title">Crear cuenta</h1>
     <p class="subtitle">Completa tus datos para registrar una cuenta activada.</p>
 
-    @if (error) {
-      <p-message severity="error">{{ error }}</p-message>
+    @if (error()) {
+      <p class="feedback feedback-error" role="alert">{{ error() }}</p>
     }
 
     <form [formGroup]="form" (ngSubmit)="registrar()">
       <div class="field">
         <label for="identificacion">Identificación</label>
-        <input pInputText id="identificacion" formControlName="identificacion" autocomplete="off" required fluid />
+        <input
+          class="control"
+          id="identificacion"
+          formControlName="identificacion"
+          autocomplete="off"
+          required
+        />
         @if (form.controls.identificacion.touched && form.controls.identificacion.invalid) {
           <small>Escribe una identificación de hasta 20 caracteres.</small>
         }
       </div>
       <div class="field">
         <label for="nombre">Nombre</label>
-        <input pInputText id="nombre" formControlName="nombre" autocomplete="given-name" required fluid />
+        <input
+          class="control"
+          id="nombre"
+          formControlName="nombre"
+          autocomplete="given-name"
+          required
+        />
         @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
           <small>Escribe el nombre, con un máximo de 80 caracteres.</small>
         }
       </div>
       <div class="field">
         <label for="apellido">Apellido</label>
-        <input pInputText id="apellido" formControlName="apellido" autocomplete="family-name" required fluid />
+        <input
+          class="control"
+          id="apellido"
+          formControlName="apellido"
+          autocomplete="family-name"
+          required
+        />
         @if (form.controls.apellido.touched && form.controls.apellido.invalid) {
           <small>Escribe el apellido, con un máximo de 80 caracteres.</small>
         }
       </div>
       <div class="field">
         <label for="email">Correo electrónico</label>
-        <input pInputText id="email" type="email" formControlName="email" autocomplete="email" required fluid />
+        <input
+          class="control"
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          required
+        />
         @if (form.controls.email.touched && form.controls.email.hasError('required')) {
           <small>Escribe tu correo electrónico.</small>
         } @else if (form.controls.email.touched && form.controls.email.invalid) {
@@ -41,38 +66,59 @@
       </div>
       <div class="field">
         <label for="cargo">Cargo</label>
-        <p-select
-          inputId="cargo"
-          formControlName="cargo"
-          [options]="cargos"
-          [fluid]="true"
-          ariaLabel="Cargo"
-        />
+        <select class="control" id="cargo" formControlName="cargo">
+          @for (cargo of cargos; track cargo) {
+            <option [value]="cargo">{{ cargo }}</option>
+          }
+        </select>
       </div>
       <div class="field">
         <label for="telefono">Teléfono</label>
-        <input pInputText id="telefono" type="tel" formControlName="telefono" autocomplete="tel" required fluid />
+        <input
+          class="control"
+          id="telefono"
+          type="tel"
+          formControlName="telefono"
+          autocomplete="tel"
+          required
+        />
         @if (form.controls.telefono.touched && form.controls.telefono.invalid) {
           <small>Escribe un teléfono de hasta 20 caracteres.</small>
         }
       </div>
       <div class="field">
         <label for="nombre_usuario">Nombre de usuario</label>
-        <input pInputText id="nombre_usuario" formControlName="nombre_usuario" autocomplete="username" required fluid />
+        <input
+          class="control"
+          id="nombre_usuario"
+          formControlName="nombre_usuario"
+          autocomplete="username"
+          required
+        />
         @if (form.controls.nombre_usuario.touched && form.controls.nombre_usuario.invalid) {
           <small>Escribe un nombre de usuario de hasta 50 caracteres.</small>
         }
       </div>
       <div class="field">
         <label for="contrasena">Contraseña (mínimo 8 caracteres)</label>
-        <p-password
-          inputId="contrasena"
-          formControlName="contrasena"
-          autocomplete="new-password"
-          [feedback]="false"
-          [toggleMask]="true"
-          [fluid]="true"
-        />
+        <div class="password-control">
+          <input
+            class="control"
+            id="contrasena"
+            [type]="mostrarContrasena ? 'text' : 'password'"
+            formControlName="contrasena"
+            autocomplete="new-password"
+            required
+          />
+          <button
+            class="visibility-button"
+            type="button"
+            [attr.aria-pressed]="mostrarContrasena"
+            (click)="mostrarContrasena = !mostrarContrasena"
+          >
+            {{ mostrarContrasena ? 'Ocultar' : 'Ver' }}
+          </button>
+        </div>
         @if (form.controls.contrasena.touched && form.controls.contrasena.hasError('required')) {
           <small>Escribe una contraseña.</small>
         } @else if (
@@ -86,13 +132,9 @@
         }
       </div>
 
-      <p-button
-        type="submit"
-        [label]="cargando ? 'Registrando…' : 'Registrarme'"
-        [loading]="cargando"
-        [disabled]="cargando"
-        [fluid]="true"
-      />
+      <button class="primary-button" type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Registrando…' : 'Registrarme' }}
+      </button>
     </form>
 
     <p class="footnote">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>

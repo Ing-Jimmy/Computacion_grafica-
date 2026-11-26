@@ -5,65 +5,70 @@
     <p class="subtitle">Ingresa con tu identificación y contraseña.</p>
 
     @if (registroExitoso) {
-      <p-message severity="success">
+      <p class="feedback feedback-success" role="status">
         Registro exitoso. Ahora puedes iniciar sesión.
-      </p-message>
+      </p>
     }
-    @if (error) {
-      <p-message severity="error">{{ error }}</p-message>
+    @if (error()) {
+      <p class="feedback feedback-error" role="alert">{{ error() }}</p>
     }
 
     <form [formGroup]="form" (ngSubmit)="ingresar()">
       <div class="field">
         <label for="identificacion">Identificación</label>
-      <input
-        pInputText
-        id="identificacion"
-        type="text"
-        formControlName="identificacion"
-        autocomplete="username"
-        required
-        fluid
-      />
-      @if (form.controls.identificacion.touched && form.controls.identificacion.hasError('required')) {
-        <small>Escribe tu identificación.</small>
-      } @else if (
-        form.controls.identificacion.touched && form.controls.identificacion.hasError('maxlength')
-      ) {
-        <small>La identificación no puede superar 20 caracteres.</small>
-      }
+        <input
+          class="control"
+          id="identificacion"
+          type="text"
+          formControlName="identificacion"
+          autocomplete="username"
+          required
+        />
+        @if (
+          form.controls.identificacion.touched && form.controls.identificacion.hasError('required')
+        ) {
+          <small>Escribe tu identificación.</small>
+        } @else if (
+          form.controls.identificacion.touched && form.controls.identificacion.hasError('maxlength')
+        ) {
+          <small>La identificación no puede superar 20 caracteres.</small>
+        }
       </div>
 
       <div class="field">
         <label for="contrasena">Contraseña</label>
-        <p-password
-          inputId="contrasena"
-          formControlName="contrasena"
-          autocomplete="current-password"
-          [feedback]="false"
-          [toggleMask]="true"
-          [fluid]="true"
-        />
-      @if (form.controls.contrasena.touched && form.controls.contrasena.hasError('required')) {
-        <small>Escribe tu contraseña.</small>
-      } @else if (
-        form.controls.contrasena.touched && form.controls.contrasena.hasError('maxlength')
-      ) {
-        <small>La contraseña no puede superar 128 caracteres.</small>
-      }
+        <div class="password-control">
+          <input
+            class="control"
+            id="contrasena"
+            [type]="mostrarContrasena ? 'text' : 'password'"
+            formControlName="contrasena"
+            autocomplete="current-password"
+            required
+          />
+          <button
+            class="visibility-button"
+            type="button"
+            [attr.aria-pressed]="mostrarContrasena"
+            (click)="mostrarContrasena = !mostrarContrasena"
+          >
+            {{ mostrarContrasena ? 'Ocultar' : 'Ver' }}
+          </button>
+        </div>
+        @if (form.controls.contrasena.touched && form.controls.contrasena.hasError('required')) {
+          <small>Escribe tu contraseña.</small>
+        } @else if (
+          form.controls.contrasena.touched && form.controls.contrasena.hasError('maxlength')
+        ) {
+          <small>La contraseña no puede superar 128 caracteres.</small>
+        }
       </div>
 
-      <p-button
-        type="submit"
-        [label]="cargando ? 'Ingresando…' : 'Ingresar'"
-        [loading]="cargando"
-        [disabled]="cargando"
-        [fluid]="true"
-      />
+      <button class="primary-button" type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Ingresando…' : 'Ingresar' }}
+      </button>
     </form>
 
-    <p class="footnote">
-      ¿No tienes cuenta? <a routerLink="/registro">Crear una cuenta</a>
-    </p>
+    <p class="footnote">¿No tienes cuenta? <a routerLink="/registro">Crear una cuenta</a></p>
   </section>
 </main>

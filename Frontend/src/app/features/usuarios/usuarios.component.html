@@ -6,26 +6,18 @@
     </div>
     <div class="top-actions">
       <span class="welcome">{{ currentUser()?.nombre }} {{ currentUser()?.apellido }}</span>
-      <p-button
-        label="Nuevo usuario"
-        icon="pi pi-user-plus"
-        (onClick)="crear()"
-      />
-      <p-button
-        label="Cerrar sesión"
-        icon="pi pi-sign-out"
-        severity="secondary"
-        [outlined]="true"
-        (onClick)="cerrarSesion()"
-      />
+      <button class="button button-primary" type="button" (click)="crear()">Nuevo usuario</button>
+      <button class="button button-secondary" type="button" (click)="cerrarSesion()">
+        Cerrar sesión
+      </button>
     </div>
   </header>
 
-  @if (error) {
-    <p-message class="feedback" severity="error">{{ error }}</p-message>
+  @if (error()) {
+    <p class="feedback feedback-error" role="alert">{{ error() }}</p>
   }
-  @if (mensaje) {
-    <p-message class="feedback" severity="success">{{ mensaje }}</p-message>
+  @if (mensaje()) {
+    <p class="feedback feedback-success" role="status">{{ mensaje() }}</p>
   }
 
   <section class="table-card" aria-labelledby="users-title">
@@ -34,217 +26,258 @@
         <p class="eyebrow">Cuentas registradas</p>
         <h2 id="users-title">Usuarios</h2>
       </div>
-      <p-button
-        label="Actualizar lista"
-        icon="pi pi-refresh"
-        severity="secondary"
-        [outlined]="true"
-        [disabled]="cargando"
-        (onClick)="cargarUsuarios()"
-      />
+      <button
+        class="button button-secondary"
+        type="button"
+        [disabled]="cargando()"
+        (click)="cargarUsuarios()"
+      >
+        {{ cargando() ? 'Actualizando…' : 'Actualizar lista' }}
+      </button>
     </div>
 
-    <p-table
-      [value]="usuarios()"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      [loading]="cargando"
-      [tableStyle]="{ 'min-width': '70rem' }"
-    >
-      <ng-template #header>
-        <tr>
-          <th>Identificación</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Correo electrónico</th>
-          <th>Cargo</th>
-          <th>Teléfono</th>
-          <th>Nombre de usuario</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
-      <ng-template #body let-usuario>
-        <tr>
-          <td>{{ usuario.identificacion }}</td>
-          <td>{{ usuario.nombre }}</td>
-          <td>{{ usuario.apellido }}</td>
-          <td>{{ usuario.email }}</td>
-          <td>{{ usuario.cargo }}</td>
-          <td>{{ usuario.telefono }}</td>
-          <td>{{ usuario.nombre_usuario }}</td>
-          <td>
-            <p-tag
-              [value]="usuario.estado"
-              [severity]="usuario.estado === 'Activado' ? 'success' : 'warn'"
-            />
-          </td>
-          <td>
-            <div class="row-actions">
-              <p-button
-                label="Editar"
-                icon="pi pi-pencil"
-                severity="secondary"
-                [outlined]="true"
-                size="small"
-                [disabled]="busyId === usuario.identificacion"
-                (onClick)="editar(usuario)"
-              />
-              <p-button
-                [label]="usuario.estado === 'Activado' ? 'Desactivar' : 'Activar'"
-                [icon]="usuario.estado === 'Activado' ? 'pi pi-ban' : 'pi pi-check'"
-                [severity]="usuario.estado === 'Activado' ? 'warn' : 'success'"
-                size="small"
-                [loading]="busyId === usuario.identificacion"
-                [disabled]="busyId === usuario.identificacion"
-                (onClick)="cambiarEstado(usuario)"
-              />
-              <p-button
-                label="Eliminar"
-                icon="pi pi-trash"
-                severity="danger"
-                size="small"
-                [disabled]="busyId === usuario.identificacion"
-                (onClick)="eliminar(usuario)"
-              />
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template #emptymessage>
-        <tr>
-          <td colspan="9" class="empty">
-            {{ cargando ? 'Cargando usuarios…' : 'No hay usuarios registrados.' }}
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+    <div class="table-scroll">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Identificación</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo electrónico</th>
+            <th>Cargo</th>
+            <th>Teléfono</th>
+            <th>Nombre de usuario</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr>
+              <td colspan="9" class="empty">Cargando usuarios…</td>
+            </tr>
+          } @else if (usuarios().length === 0) {
+            <tr>
+              <td colspan="9" class="empty">No hay usuarios registrados.</td>
+            </tr>
+          } @else {
+            @for (usuario of usuarios(); track usuario.identificacion) {
+              <tr>
+                <td>{{ usuario.identificacion }}</td>
+                <td>{{ usuario.nombre }}</td>
+                <td>{{ usuario.apellido }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.cargo }}</td>
+                <td>{{ usuario.telefono }}</td>
+                <td>{{ usuario.nombre_usuario }}</td>
+                <td>
+                  <span
+                    class="status-chip"
+                    [class.status-active]="usuario.estado === 'Activado'"
+                    [class.status-inactive]="usuario.estado === 'Desactivado'"
+                  >
+                    {{ usuario.estado }}
+                  </span>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button
+                      class="button button-small button-secondary"
+                      type="button"
+                      [disabled]="busyId() === usuario.identificacion"
+                      (click)="editar(usuario)"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      class="button button-small"
+                      [class.button-warning]="usuario.estado === 'Activado'"
+                      [class.button-success]="usuario.estado === 'Desactivado'"
+                      type="button"
+                      [disabled]="busyId() === usuario.identificacion"
+                      (click)="cambiarEstado(usuario)"
+                    >
+                      {{
+                        busyId() === usuario.identificacion
+                          ? 'Guardando…'
+                          : usuario.estado === 'Activado'
+                            ? 'Desactivar'
+                            : 'Activar'
+                      }}
+                    </button>
+                    <button
+                      class="button button-small button-danger"
+                      type="button"
+                      [disabled]="busyId() === usuario.identificacion"
+                      (click)="eliminar(usuario)"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <p-dialog
-    [(visible)]="dialogVisible"
-    [header]="editandoId === null ? 'Crear usuario' : 'Editar usuario'"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
-    [closable]="!guardando"
-    [dismissableMask]="false"
-    [breakpoints]="{ '960px': '75vw', '640px': '95vw' }"
-    [style]="{ width: 'min(720px, 95vw)' }"
-    (onHide)="alCerrarDialogo()"
-  >
-    <form [formGroup]="form" (ngSubmit)="guardar()">
-      <div class="form-grid">
-        <label>
-          Identificación
-          <input
-            pInputText
-            formControlName="identificacion"
-            [readonly]="editandoId !== null"
-            autocomplete="off"
-            required
-            fluid
-          />
-          @if (form.controls.identificacion.touched && form.controls.identificacion.invalid) {
-            <small>Escribe una identificación de hasta 20 caracteres.</small>
-          }
-        </label>
-        <label>
-          Nombre
-          <input pInputText formControlName="nombre" autocomplete="given-name" required fluid />
-          @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
-            <small>Escribe el nombre, con un máximo de 80 caracteres.</small>
-          }
-        </label>
-        <label>
-          Apellido
-          <input pInputText formControlName="apellido" autocomplete="family-name" required fluid />
-          @if (form.controls.apellido.touched && form.controls.apellido.invalid) {
-            <small>Escribe el apellido, con un máximo de 80 caracteres.</small>
-          }
-        </label>
-        <label>
-          Correo electrónico
-          <input
-            pInputText
-            type="email"
-            formControlName="email"
-            autocomplete="email"
-            required
-            fluid
-          />
-          @if (form.controls.email.touched && form.controls.email.hasError('required')) {
-            <small>Escribe tu correo electrónico.</small>
-          } @else if (form.controls.email.touched && form.controls.email.invalid) {
-            <small>Escribe un correo válido.</small>
-          }
-        </label>
-        <label>
-          Cargo
-          <p-select
-            formControlName="cargo"
-            [options]="cargos"
-            [fluid]="true"
-            ariaLabel="Cargo"
-          />
-        </label>
-        <label>
-          Teléfono
-          <input pInputText type="tel" formControlName="telefono" autocomplete="tel" required fluid />
-          @if (form.controls.telefono.touched && form.controls.telefono.invalid) {
-            <small>Escribe un teléfono de hasta 20 caracteres.</small>
-          }
-        </label>
-        <label>
-          Nombre de usuario
-          <input
-            pInputText
-            formControlName="nombre_usuario"
-            autocomplete="username"
-            required
-            fluid
-          />
-          @if (form.controls.nombre_usuario.touched && form.controls.nombre_usuario.invalid) {
-            <small>Escribe un nombre de usuario de hasta 50 caracteres.</small>
-          }
-        </label>
-        <label class="wide">
-          Contraseña
-          <p-password
-            inputId="contrasena"
-            formControlName="contrasena"
-            autocomplete="new-password"
-            [placeholder]="editandoId === null ? 'Mínimo 8 caracteres' : 'Vacío para conservar la actual'"
-            [feedback]="false"
-            [toggleMask]="true"
-            [fluid]="true"
-          />
-          @if (form.controls.contrasena.touched && form.controls.contrasena.hasError('required')) {
-            <small>La contraseña es obligatoria para crear una cuenta.</small>
-          } @else if (form.controls.contrasena.touched && form.controls.contrasena.hasError('minlength')) {
-            <small>La contraseña debe tener al menos 8 caracteres.</small>
-          } @else if (form.controls.contrasena.touched && form.controls.contrasena.hasError('maxlength')) {
-            <small>La contraseña no puede superar 128 caracteres.</small>
-          }
-        </label>
-      </div>
+  @if (dialogVisible) {
+    <div class="dialog-backdrop">
+      <section
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialog-title"
+        (keydown.escape)="cerrarFormulario()"
+      >
+        <header class="dialog-header">
+          <h2 id="dialog-title">{{ editandoId === null ? 'Crear usuario' : 'Editar usuario' }}</h2>
+          <button
+            class="icon-button"
+            type="button"
+            aria-label="Cerrar formulario"
+            [disabled]="guardando()"
+            (click)="cerrarFormulario()"
+          >
+            ×
+          </button>
+        </header>
+        <form [formGroup]="form" (ngSubmit)="guardar()">
+          <div class="form-grid">
+            <label>
+              Identificación
+              <input
+                class="control"
+                formControlName="identificacion"
+                [readonly]="editandoId !== null"
+                autocomplete="off"
+                required
+              />
+              @if (form.controls.identificacion.touched && form.controls.identificacion.invalid) {
+                <small>Escribe una identificación de hasta 20 caracteres.</small>
+              }
+            </label>
+            <label>
+              Nombre
+              <input class="control" formControlName="nombre" autocomplete="given-name" required />
+              @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+                <small>Escribe el nombre, con un máximo de 80 caracteres.</small>
+              }
+            </label>
+            <label>
+              Apellido
+              <input
+                class="control"
+                formControlName="apellido"
+                autocomplete="family-name"
+                required
+              />
+              @if (form.controls.apellido.touched && form.controls.apellido.invalid) {
+                <small>Escribe el apellido, con un máximo de 80 caracteres.</small>
+              }
+            </label>
+            <label>
+              Correo electrónico
+              <input
+                class="control"
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                required
+              />
+              @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+                <small>Escribe tu correo electrónico.</small>
+              } @else if (form.controls.email.touched && form.controls.email.invalid) {
+                <small>Escribe un correo válido.</small>
+              }
+            </label>
+            <label>
+              Cargo
+              <select class="control" formControlName="cargo">
+                @for (cargo of cargos; track cargo) {
+                  <option [value]="cargo">{{ cargo }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              Teléfono
+              <input
+                class="control"
+                type="tel"
+                formControlName="telefono"
+                autocomplete="tel"
+                required
+              />
+              @if (form.controls.telefono.touched && form.controls.telefono.invalid) {
+                <small>Escribe un teléfono de hasta 20 caracteres.</small>
+              }
+            </label>
+            <label>
+              Nombre de usuario
+              <input
+                class="control"
+                formControlName="nombre_usuario"
+                autocomplete="username"
+                required
+              />
+              @if (form.controls.nombre_usuario.touched && form.controls.nombre_usuario.invalid) {
+                <small>Escribe un nombre de usuario de hasta 50 caracteres.</small>
+              }
+            </label>
+            <label class="wide">
+              Contraseña
+              <div class="password-control">
+                <input
+                  class="control"
+                  [type]="mostrarContrasena ? 'text' : 'password'"
+                  formControlName="contrasena"
+                  autocomplete="new-password"
+                  [placeholder]="
+                    editandoId === null ? 'Mínimo 8 caracteres' : 'Vacío para conservar la actual'
+                  "
+                />
+                <button
+                  class="visibility-button"
+                  type="button"
+                  [attr.aria-pressed]="mostrarContrasena"
+                  (click)="mostrarContrasena = !mostrarContrasena"
+                >
+                  {{ mostrarContrasena ? 'Ocultar' : 'Ver' }}
+                </button>
+              </div>
+              @if (
+                form.controls.contrasena.touched && form.controls.contrasena.hasError('required')
+              ) {
+                <small>La contraseña es obligatoria para crear una cuenta.</small>
+              } @else if (
+                form.controls.contrasena.touched && form.controls.contrasena.hasError('minlength')
+              ) {
+                <small>La contraseña debe tener al menos 8 caracteres.</small>
+              } @else if (
+                form.controls.contrasena.touched && form.controls.contrasena.hasError('maxlength')
+              ) {
+                <small>La contraseña no puede superar 128 caracteres.</small>
+              }
+            </label>
+          </div>
 
-      <div class="dialog-actions">
-        <p-button
-          label="Cancelar"
-          severity="secondary"
-          [outlined]="true"
-          [disabled]="guardando"
-          (onClick)="cerrarFormulario()"
-        />
-        <p-button
-          type="submit"
-          [label]="guardando ? 'Guardando…' : 'Guardar'"
-          [loading]="guardando"
-          [disabled]="guardando"
-        />
-      </div>
-    </form>
-  </p-dialog>
+          <div class="dialog-actions">
+            <button
+              class="button button-secondary"
+              type="button"
+              [disabled]="guardando()"
+              (click)="cerrarFormulario()"
+            >
+              Cancelar
+            </button>
+            <button class="button button-primary" type="submit" [disabled]="guardando()">
+              {{ guardando() ? 'Guardando…' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  }
 </main>

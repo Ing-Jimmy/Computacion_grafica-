@@ -1,12 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { MessageModule } from 'primeng/message';
-import { PasswordModule } from 'primeng/password';
-import { SelectModule } from 'primeng/select';
 
 import { Cargo } from '../../../core/models/usuario.model';
 import { UsuarioService } from '../../../core/services/usuario.service';
@@ -15,15 +10,7 @@ import { hospitalEmailValidator } from '../../../core/utils/email.validators';
 
 @Component({
   selector: 'app-registro',
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    ButtonModule,
-    InputTextModule,
-    MessageModule,
-    PasswordModule,
-    SelectModule,
-  ],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css',
 })
@@ -41,13 +28,11 @@ export class RegistroComponent {
     cargo: this.formBuilder.nonNullable.control<Cargo>('Doctor'),
     telefono: ['', [Validators.required, Validators.maxLength(20)]],
     nombre_usuario: ['', [Validators.required, Validators.maxLength(50)]],
-    contrasena: [
-      '',
-      [Validators.required, Validators.minLength(8), Validators.maxLength(128)],
-    ],
+    contrasena: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(128)]],
   });
-  cargando = false;
-  error = '';
+  cargando = signal(false);
+  error = signal('');
+  mostrarContrasena = false;
 
   registrar(): void {
     if (this.form.invalid) {
@@ -55,20 +40,22 @@ export class RegistroComponent {
       return;
     }
 
-    this.error = '';
-    this.cargando = true;
+    this.error.set('');
+    this.cargando.set(true);
     this.usuarioService
       .registrar(this.form.getRawValue())
-      .pipe(finalize(() => (this.cargando = false)))
+      .pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
         next: () =>
           void this.router.navigate(['/login'], {
             queryParams: { registro: 'exitoso' },
           }),
         error: (error: unknown) => {
-          this.error = apiErrorMessage(
-            error,
-            'No fue posible crear la cuenta. Revisa la conexión con el servidor.',
+          this.error.set(
+            apiErrorMessage(
+              error,
+              'No fue posible crear la cuenta. Revisa la conexión con el servidor.',
+            ),
           );
         },
       });
